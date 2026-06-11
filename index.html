@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joshua Muhumuza — AI Safety Researcher</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+
+:root {
+  --bg: #080c14;
+  --bg-2: #0d1422;
+  --bg-3: #111a2e;
+  --surface: #141e33;
+  --surface-2: #1a2540;
+  --border: rgba(100, 160, 255, 0.12);
+  --border-hover: rgba(100, 160, 255, 0.3);
+  --accent: #3b82f6;
+  --accent-2: #06b6d4;
+  --accent-3: #8b5cf6;
+  --accent-glow: rgba(59, 130, 246, 0.35);
+  --text: #e8edf7;
+  --text-2: #9aadc8;
+  --text-3: #5a7090;
+  --green: #10b981;
+  --amber: #f59e0b;
+  --font-display: 'Syne', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+/* ─── SELECTION ─── */
+::selection { background: rgba(59,130,246,0.3); color: #fff; }
+
+/* ─── NOISE OVERLAY ─── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999; opacity: 0.5;
+}
+
+/* ─── NAV ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  padding: 0 2rem;
+  background: rgba(8,12,20,0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: all 0.3s;
+}
+nav.scrolled { background: rgba(8,12,20,0.97); }
+
+.nav-brand {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 1.1rem;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+.nav-brand span { color: var(--accent); }
+
+.nav-links {
+  display: flex; align-items: center; gap: 0.25rem;
+  list-style: none;
+}
+.nav-links a {
+  font-family: var(--font-mono);
+  font-size: 0.72rem; font-weight: 400;
+  color: var(--text-2);
+  text-decoration: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.nav-links a:hover, .nav-links a.active {
+  color: var(--accent);
+  background: rgba(59,130,246,0.1);
+}
+
+.nav-cta {
+  font-family: var(--font-mono);
+  font-size: 0.72rem; font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  transition: all 0.2s;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.nav-cta:hover {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column; gap: 5px;
+  cursor: pointer; background: none; border: none; padding: 4px;
+}
+.hamburger span {
+  display: block; width: 22px; height: 1.5px;
+  background: var(--text-2); transition: all 0.3s;
+  border-radius: 2px;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+.mobile-menu {
+  display: none;
+  position: fixed; top: 60px; left: 0; right: 0;
+  background: rgba(8,12,20,0.98);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 1.5rem 2rem;
+  z-index: 999;
+  flex-direction: column; gap: 0.5rem;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-2);
+  text-decoration: none;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.mobile-menu a:hover { color: var(--accent); }
+
+/* ─── HERO ─── */
+#hero {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  padding: 80px 2rem 2rem;
+}
+
+.hero-canvas {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(59,130,246,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 70%, rgba(6,182,212,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 60% at 60% 20%, rgba(139,92,246,0.05) 0%, transparent 50%);
+}
+
+#particles-canvas {
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative; z-index: 2;
+  max-width: 860px;
+  text-align: center;
+}
+
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent-2);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+  display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+}
+.hero-eyebrow::before, .hero-eyebrow::after {
+  content: '';
+  display: inline-block; width: 40px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-2));
+}
+.hero-eyebrow::after { transform: scaleX(-1); }
+
+.hero-name {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 9vw, 7rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+  opacity: 0; animation: fadeUp 0.8s 0.35s forwards;
+}
+.hero-name .highlight {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 50%, var(--accent-3) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-typewriter-wrap {
+  min-height: 2.5rem;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 1.75rem;
+  opacity: 0; animation: fadeUp 0.8s 0.5s forwards;
+}
+.hero-typewriter {
+  font-family: var(--font-mono);
+  font-size: clamp(0.9rem, 2.5vw, 1.15rem);
+  color: var(--accent);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+.cursor {
+  display: inline-block;
+  width: 2px; height: 1.1em;
+  background: var(--accent);
+  margin-left: 3px;
+  vertical-align: middle;
+  animation: blink 0.8s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.hero-bio {
+  font-size: 1.05rem;
+  color: var(--text-2);
+  max-width: 600px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.8;
+  opacity: 0; animation: fadeUp 0.8s 0.65s forwards;
+}
+
+.hero-actions {
+  display: flex; align-items: center; justify-content: center;
+  gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem;
+  opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
+}
+
+.btn-primary {
+  font-family: var(--font-mono);
+  font-size: 0.8rem; font-weight: 500;
+  color: #fff;
+  text-decoration: none;
+  padding: 0.75rem 2rem;
+  background: var(--accent);
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  position: relative; overflow: hidden;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  opacity: 0; transition: opacity 0.2s;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--accent-glow); }
+.btn-primary:hover::before { opacity: 1; }
+
+.btn-ghost {
+  font-family: var(--font-mono);
+  font-size: 0.8rem; font-weight: 400;
+  color: var(--text-2);
+  text-decoration: none;
+  padding: 0.75rem 2rem;
+  border: 1px solid var(--border-hover);
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+.btn-ghost:hover {
+  color: var(--text);
+  border-color: var(--accent);
+  background: rgba(59,130,246,0.08);
+  transform: translateY(-2px);
+}
+
+.hero-socials {
+  display: flex; align-items: center; justify-content: center; gap: 1.5rem;
+  opacity: 0; animation: fadeUp 0.8s 0.95s forwards;
+}
+.hero-socials a {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-3);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.hero-socials a:hover { color: var(--accent); }
+.hero-socials a svg { width: 14px; height: 14px; fill: currentColor; }
+
+.hero-scroll-hint {
+  position: absolute; bottom: 2.5rem; left: 50%;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  opacity: 0; animation: fadeUp 0.8s 1.2s forwards;
+}
+.scroll-line {
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+  animation: scrollPulse 2s infinite;
+}
+@keyframes scrollPulse {
+  0%,100% { opacity: 0.3; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.1); }
+}
+
+/* ─── SECTIONS COMMON ─── */
+section { padding: 6rem 2rem; }
+.container { max-width: 1080px; margin: 0 auto; }
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--accent-2);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.section-label::before {
+  content: '';
+  display: inline-block; width: 24px; height: 1px;
+  background: var(--accent-2);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.1;
+  margin-bottom: 3.5rem;
+}
+.section-title em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── FADE-IN ANIMATION ─── */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── ABOUT ─── */
+#about { background: var(--bg-2); }
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 5rem;
+  align-items: start;
+}
+
+.avatar-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 1.5rem;
+}
+
+.avatar {
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  box-shadow: 0 0 60px rgba(59,130,246,0.15);
+  transition: box-shadow 0.3s;
+  overflow: visible;
+}
+.avatar:hover { box-shadow: 0 0 80px rgba(59,130,246,0.3); }
+.avatar::before {
+  content: '';
+  position: absolute; inset: -4px;
+  border-radius: 50%;
+  background: conic-gradient(var(--accent), var(--accent-2), var(--accent-3), var(--accent));
+  z-index: -1;
+  animation: spin 6s linear infinite;
+  opacity: 0.6;
+}
+.avatar::after {
+  content: '';
+  position: absolute; inset: -2px;
+  border-radius: 50%;
+  background: var(--bg-2);
+  z-index: -1;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.avatar img {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.avatar-location {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.about-text p {
+  color: var(--text-2);
+  font-size: 1.05rem;
+  line-height: 1.85;
+  margin-bottom: 1.25rem;
+}
+.about-text p:last-of-type { margin-bottom: 2.5rem; }
+
+strong { color: var(--text); font-weight: 500; }
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  transition: all 0.25s;
+}
+.stat:hover {
+  border-color: var(--accent);
+  background: var(--surface-2);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(59,130,246,0.12);
+}
+.stat-number {
+  font-family: var(--font-display);
+  font-size: 1.6rem; font-weight: 800;
+  color: var(--accent);
+  display: block; line-height: 1;
+  margin-bottom: 0.35rem;
+}
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ─── RESEARCH ─── */
+#research { background: var(--bg); position: relative; }
+#research::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), var(--accent-2), transparent);
+}
+
+.research-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.research-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.75rem;
+  transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
+  position: relative; overflow: hidden;
+  cursor: default;
+}
+.research-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(59,130,246,0.04), transparent);
+  opacity: 0; transition: opacity 0.3s;
+}
+.research-card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(59,130,246,0.15);
+}
+.research-card:hover::before { opacity: 1; }
+.research-card.featured {
+  border-color: rgba(59,130,246,0.25);
+  background: linear-gradient(135deg, var(--surface) 0%, rgba(59,130,246,0.05) 100%);
+}
+
+.card-year {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.card-year::before {
+  content: '';
+  display: inline-block; width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  box-shadow: 0 0 8px var(--accent-2);
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: 1rem; font-weight: 700;
+  color: var(--text);
+  line-height: 1.35;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.card-desc {
+  font-size: 0.85rem;
+  color: var(--text-2);
+  line-height: 1.7;
+  margin-bottom: 1.25rem;
+}
+
+.badges {
+  display: flex; flex-wrap: wrap; gap: 0.4rem;
+}
+.badge {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  padding: 0.2rem 0.6rem;
+  border-radius: 3px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.badge-blue { background: rgba(59,130,246,0.12); color: var(--accent); border: 1px solid rgba(59,130,246,0.2); }
+.badge-cyan { background: rgba(6,182,212,0.1); color: var(--accent-2); border: 1px solid rgba(6,182,212,0.2); }
+.badge-purple { background: rgba(139,92,246,0.1); color: #a78bfa; border: 1px solid rgba(139,92,246,0.2); }
+.badge-green { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.badge-amber { background: rgba(245,158,11,0.1); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+
+/* ─── PUBLICATIONS ─── */
+#publications { background: var(--bg-2); }
+
+.pub-list { display: flex; flex-direction: column; gap: 1.25rem; }
+
+.pub-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem 1.75rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: start;
+  transition: all 0.25s;
+  position: relative;
+}
+.pub-item:hover {
+  border-color: var(--border-hover);
+  transform: translateX(4px);
+  box-shadow: -4px 0 0 var(--accent), 0 4px 20px rgba(0,0,0,0.2);
+}
+.pub-item::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: linear-gradient(to bottom, var(--accent), var(--accent-2));
+  border-radius: 8px 0 0 8px;
+  opacity: 0.4; transition: opacity 0.25s;
+}
+.pub-item:hover::before { opacity: 1; }
+
+.pub-text { flex: 1; }
+.pub-authors {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-3);
+  letter-spacing: 0.03em;
+  margin-bottom: 0.35rem;
+}
+.pub-title {
+  font-family: var(--font-body);
+  font-size: 0.95rem; font-weight: 500;
+  color: var(--text);
+  line-height: 1.5;
+  margin-bottom: 0.35rem;
+}
+.pub-venue {
+  font-size: 0.82rem;
+  color: var(--accent-2);
+  font-style: italic;
+}
+
+.pub-badge {
+  font-family: var(--font-mono);
+  font-size: 0.6rem; font-weight: 500;
+  padding: 0.25rem 0.6rem;
+  border-radius: 3px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  align-self: flex-start;
+  margin-top: 0.25rem;
+}
+.pub-accepted { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.25); }
+.pub-review { background: rgba(245,158,11,0.1); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+
+/* ─── GRANTS ─── */
+#grants { background: var(--bg-3); position: relative; overflow: hidden; }
+#grants::before {
+  content: '';
+  position: absolute; top: -200px; right: -200px;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.grants-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+.grant-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  transition: all 0.3s;
+  position: relative; overflow: hidden;
+}
+.grant-card::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.3s;
+}
+.grant-card:hover { border-color: var(--border-hover); transform: translateY(-3px); }
+.grant-card:hover::after { transform: scaleX(1); }
+
+.grant-amount {
+  font-family: var(--font-display);
+  font-size: 1.4rem; font-weight: 800;
+  color: var(--green);
+  margin-bottom: 0.25rem;
+}
+.grant-year {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+.grant-title {
+  font-family: var(--font-display);
+  font-size: 0.9rem; font-weight: 700;
+  color: var(--text);
+  line-height: 1.35;
+  margin-bottom: 0.35rem;
+}
+.grant-funder {
+  font-size: 0.78rem;
+  color: var(--accent-2);
+  margin-bottom: 0.6rem;
+}
+.grant-desc {
+  font-size: 0.78rem;
+  color: var(--text-3);
+  line-height: 1.6;
+}
+
+/* ─── EXPERIENCE ─── */
+#experience { background: var(--bg); }
+
+.timeline {
+  position: relative;
+  padding-left: 2.5rem;
+}
+.timeline::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 1px;
+  background: linear-gradient(to bottom, var(--accent), var(--accent-2), transparent);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 3rem;
+}
+.timeline-item:last-child { margin-bottom: 0; }
+.timeline-item::before {
+  content: '';
+  position: absolute; left: -2.5rem; top: 0.25rem;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.timeline-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 1rem; margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+.timeline-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem; font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.timeline-org {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  margin-top: 0.2rem;
+}
+.timeline-period {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-3);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  padding: 0.25rem 0.6rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.timeline-body {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+}
+.timeline-body ul {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+.timeline-body li {
+  font-size: 0.87rem;
+  color: var(--text-2);
+  line-height: 1.65;
+  display: flex; gap: 0.6rem;
+}
+.timeline-body li::before {
+  content: '›';
+  color: var(--accent);
+  font-size: 1rem;
+  line-height: 1.5;
+  flex-shrink: 0;
+}
+
+.timeline-subrole { margin-bottom: 1.25rem; }
+.timeline-subrole:last-child { margin-bottom: 0; }
+.timeline-subrole + .timeline-subrole {
+  border-top: 1px solid var(--border);
+  padding-top: 1.25rem;
+}
+
+.subrole-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; margin-bottom: 0.75rem;
+}
+.subrole-title {
+  font-family: var(--font-mono);
+  font-size: 0.78rem; font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.03em;
+}
+.subrole-period {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-3);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+/* ─── GOVERNANCE ─── */
+#governance { background: var(--bg-2); }
+
+.gov-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.gov-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 2rem;
+  transition: all 0.3s;
+  position: relative; overflow: hidden;
+}
+.gov-card::before {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  width: 120px; height: 120px;
+  background: radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.gov-card:hover { border-color: rgba(139,92,246,0.3); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
+
+.gov-icon {
+  font-size: 1.75rem; margin-bottom: 1rem;
+}
+.gov-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem; font-weight: 700;
+  color: var(--text); margin-bottom: 0.35rem;
+}
+.gov-org {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: #a78bfa;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.gov-period {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-3);
+  margin-bottom: 1rem;
+}
+.gov-body ul {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+.gov-body li {
+  font-size: 0.86rem;
+  color: var(--text-2);
+  line-height: 1.65;
+  display: flex; gap: 0.6rem;
+}
+.gov-body li::before {
+  content: '›';
+  color: #a78bfa;
+  font-size: 1rem;
+  line-height: 1.5;
+  flex-shrink: 0;
+}
+
+/* ─── EDUCATION ─── */
+#education { background: var(--bg-3); }
+
+.edu-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.edu-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 2rem 2rem 1.75rem;
+  transition: all 0.3s;
+  position: relative;
+}
+.edu-card:hover { border-color: var(--border-hover); transform: translateY(-4px); box-shadow: 0 16px 50px rgba(0,0,0,0.3); }
+
+.edu-degree {
+  font-family: var(--font-display);
+  font-size: 1.15rem; font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 0.35rem;
+  letter-spacing: -0.01em;
+}
+.edu-school {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
+}
+.edu-year {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+  margin-bottom: 1.25rem;
+}
+.edu-gpa {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(16,185,129,0.1);
+  border: 1px solid rgba(16,185,129,0.2);
+  padding: 0.4rem 0.9rem;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--green);
+  margin-bottom: 1rem;
+}
+.edu-sponsorship {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(59,130,246,0.08);
+  border: 1px solid rgba(59,130,246,0.15);
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ─── CONTACT ─── */
+#contact {
+  background: var(--bg);
+  position: relative; overflow: hidden;
+}
+#contact::before {
+  content: '';
+  position: absolute; bottom: -300px; left: 50%;
+  transform: translateX(-50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.contact-inner {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+.contact-inner .section-label { justify-content: center; }
+.contact-inner .section-title { text-align: center; }
+
+.contact-tagline {
+  font-size: 1.05rem;
+  color: var(--text-2);
+  line-height: 1.8;
+  margin-bottom: 3rem;
+}
+
+.contact-links {
+  display: flex; align-items: center; justify-content: center;
+  gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem;
+}
+
+.contact-link {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-2);
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: all 0.2s;
+  letter-spacing: 0.03em;
+}
+.contact-link svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
+.contact-link:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(59,130,246,0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(59,130,246,0.15);
+}
+
+.contact-availability {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--green);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.availability-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 10px var(--green);
+  animation: pulse-green 2s infinite;
+}
+@keyframes pulse-green {
+  0%,100% { box-shadow: 0 0 6px var(--green); }
+  50% { box-shadow: 0 0 14px var(--green), 0 0 28px rgba(16,185,129,0.3); }
+}
+
+/* ─── FOOTER ─── */
+footer {
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  padding: 2rem;
+  text-align: center;
+}
+footer p {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  .research-grid { grid-template-columns: repeat(2, 1fr); }
+  .grants-grid { grid-template-columns: repeat(2, 1fr); }
+  .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .avatar-wrap { flex-direction: row; align-items: center; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  section { padding: 4rem 1.25rem; }
+  .nav-links, .nav-cta { display: none; }
+  .hamburger { display: flex; }
+  .research-grid { grid-template-columns: 1fr; }
+  .grants-grid { grid-template-columns: 1fr; }
+  .gov-cards { grid-template-columns: 1fr; }
+  .edu-cards { grid-template-columns: 1fr; }
+  .hero-name { font-size: clamp(2.5rem, 14vw, 4rem); }
+  .pub-item { grid-template-columns: 1fr; }
+  .timeline-header { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#hero" class="nav-brand">J<span>.</span>Muhumuza</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#publications">Papers</a></li>
+    <li><a href="#grants">Grants</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#governance">Policy</a></li>
+    <li><a href="#education">Education</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Contact</a>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#about" onclick="closeMobile()">About</a>
+  <a href="#research" onclick="closeMobile()">Research</a>
+  <a href="#publications" onclick="closeMobile()">Publications</a>
+  <a href="#grants" onclick="closeMobile()">Grants</a>
+  <a href="#experience" onclick="closeMobile()">Experience</a>
+  <a href="#governance" onclick="closeMobile()">AI Policy</a>
+  <a href="#education" onclick="closeMobile()">Education</a>
+  <a href="#contact" onclick="closeMobile()">Contact</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-canvas"></div>
+  <canvas id="particles-canvas"></canvas>
+
+  <div class="hero-inner">
+    <div class="hero-eyebrow">AI Safety · Systems Engineering · Governance</div>
+    <h1 class="hero-name">
+      Joshua<br><span class="highlight">Muhumuza</span>
+    </h1>
+    <div class="hero-typewriter-wrap">
+      <span class="hero-typewriter" id="typewriter"></span><span class="cursor"></span>
+    </div>
+    <p class="hero-bio">
+      AI safety researcher and systems engineer with demonstrated impact across clinical AI deployment,
+      mechanistic interpretability, and AI governance. Google DeepMind Scholar. Published at ICML 2026.
+    </p>
+    <div class="hero-actions">
+      <a href="#research" class="btn-primary">View Research</a>
+      <a href="Joshua_Muhumuza_CV.pdf" target="_blank" class="btn-ghost">View CV</a>
+      <a href="#contact" class="btn-ghost">Get in Touch</a>
+    </div>
+    <div class="hero-socials">
+      <a href="https://github.com/joshmuhu" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        GitHub
+      </a>
+      <a href="https://linkedin.com/in/muhumuza/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+      <a href="mailto:muhumuzajoshua95@gmail.com">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.909 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>
+        Email
+      </a>
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint">
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="avatar-wrap reveal">
+        <div class="avatar">
+          <img src="photo.jpg" alt="Joshua Muhumuza">
+        </div>
+        <div class="avatar-location">📍 Kampala, Uganda</div>
+      </div>
+      <div class="about-text reveal reveal-delay-1">
+        <div class="section-label">About</div>
+        <h2 class="section-title">Building <em>safe AI</em> for the Global South</h2>
+        <p>
+          I'm an AI safety researcher and senior systems engineer working at the intersection of <strong>mechanistic interpretability</strong>,
+          <strong>clinical AI deployment</strong>, and <strong>AI governance policy</strong>. My research focuses on making AI systems
+          safe and beneficial for underserved populations across East Africa and the Global South.
+        </p>
+        <p>
+          A <strong>Google DeepMind Scholar</strong> with First Class Honours in both my BSc and MSc from Makerere University,
+          I've spent over 7 years building enterprise systems used by 10,000+ users across 175+ universities on the continent.
+          My work spans from identifying spurious attention circuits in clinical Vision Transformers to advising the East African
+          Community on regional AI governance frameworks.
+        </p>
+
+        <div class="stats-row">
+          <div class="stat">
+            <span class="stat-number">7+</span>
+            <span class="stat-label">Years Engineering</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">10K+</span>
+            <span class="stat-label">System Users</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">6</span>
+            <span class="stat-label">Active Grants</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">5</span>
+            <span class="stat-label">Publications</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESEARCH -->
+<section id="research">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Research</div>
+      <h2 class="section-title">Active <em>Research Projects</em></h2>
+    </div>
+
+    <div class="research-grid">
+      <div class="research-card featured reveal reveal-delay-1">
+        <div class="card-year">2026 — Present</div>
+        <div class="card-title">AI Safety: Mechanistic Interpretability in Clinical AI</div>
+        <div class="card-desc">
+          Identified spurious attention circuit (L8H10) in a Vision Transformer trained on chest X-rays — causally verified as harmful yet completely invisible to standard output-level safety evaluation. Direct implications for clinical AI procurement in low-resource settings. Manuscript submitted to Deep Learning Indaba 2026 / IJCAI.
+        </div>
+        <div class="badges">
+          <span class="badge badge-blue">AI Safety</span>
+          <span class="badge badge-cyan">Mechanistic Interpretability</span>
+          <span class="badge badge-purple">Vision Transformers</span>
+        </div>
+      </div>
+
+      <div class="research-card reveal reveal-delay-2">
+        <div class="card-year">2025 — Present</div>
+        <div class="card-title">Pluralistic Alignment: Annotation Bias &amp; Hate Speech</div>
+        <div class="card-desc">
+          Demonstrated empirically that majority-vote annotation in hate speech datasets suppresses minority value judgments at the hate/offensive boundary — a structural failure with direct implications for multilingual, multicultural populations across East Africa. Accepted at ICML 2026.
+        </div>
+        <div class="badges">
+          <span class="badge badge-purple">Alignment</span>
+          <span class="badge badge-green">ICML 2026 ✓</span>
+          <span class="badge badge-cyan">NLP</span>
+        </div>
+      </div>
+
+      <div class="research-card reveal reveal-delay-3">
+        <div class="card-year">Feb – May 2025</div>
+        <div class="card-title">ITU Project: University of Oxford</div>
+        <div class="card-desc">
+          Collaborated on country-focused policy case studies (primarily Kenya), analyzing national responses to emerging AI safety institutes and governance structures. Cross-country analysis of EAC AI governance gaps. Funded by Institute of Applied Policy.
+        </div>
+        <div class="badges">
+          <span class="badge badge-purple">AI Governance</span>
+          <span class="badge badge-amber">Oxford</span>
+          <span class="badge badge-cyan">Policy Research</span>
+        </div>
+      </div>
+
+      <div class="research-card reveal reveal-delay-1">
+        <div class="card-year">Oct 2024 — Present</div>
+        <div class="card-title">AMR Surveillance AI Model</div>
+        <div class="card-desc">
+          Tech Lead designing and piloting low-resource recommendation models and companion mobile application for antimicrobial resistance (AMR) surveillance, co-infection detection, and real-time information dissemination to community health workers.
+        </div>
+        <div class="badges">
+          <span class="badge badge-blue">Clinical AI</span>
+          <span class="badge badge-green">GIZ Funded</span>
+          <span class="badge badge-cyan">Mobile Health</span>
+        </div>
+      </div>
+
+      <div class="research-card reveal reveal-delay-2">
+        <div class="card-year">June 2022 — Present</div>
+        <div class="card-title">Sickle Cell Early Detection AI</div>
+        <div class="card-desc">
+          Led development of a lightweight deep learning model for enhanced interpretation of rapid diagnostic tests in low-resource contexts. Optimized computer vision algorithms for mobile deployment, improving early sickle cell disease detection in underserved regions.
+        </div>
+        <div class="badges">
+          <span class="badge badge-blue">Clinical AI</span>
+          <span class="badge badge-green">NIH Funded</span>
+          <span class="badge badge-cyan">Computer Vision</span>
+        </div>
+      </div>
+
+      <div class="research-card reveal reveal-delay-3">
+        <div class="card-year">Jan 2023 – Sept 2023</div>
+        <div class="card-title">Tuberculosis Classifier &amp; Report Generation AI</div>
+        <div class="card-desc">
+          Directed creation of an explainable multi-task deep learning architecture for chest X-ray classification and automated report generation. Overcame long-context LLM limitations for clinical usability. Deployed at Uganda's national referral hospitals.
+        </div>
+        <div class="badges">
+          <span class="badge badge-blue">Clinical AI</span>
+          <span class="badge badge-amber">Lacuna Fund</span>
+          <span class="badge badge-purple">XAI</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PUBLICATIONS -->
+<section id="publications">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Publications</div>
+      <h2 class="section-title">Selected <em>Papers</em></h2>
+    </div>
+
+    <div class="pub-list">
+      <div class="pub-item reveal reveal-delay-1">
+        <div class="pub-text">
+          <div class="pub-authors">Muhumuza, J. et al. (2025)</div>
+          <div class="pub-title">Spurious Circuits Invisible to Behavioural Evaluation: Mechanistic Interpretability in Clinical Vision Transformers.</div>
+          <div class="pub-venue">Under review — Deep Learning Indaba 2026 / IJCAI Journal</div>
+        </div>
+        <span class="pub-badge pub-review">Under Review</span>
+      </div>
+
+      <div class="pub-item reveal reveal-delay-2">
+        <div class="pub-text">
+          <div class="pub-authors">Muhumuza, J. et al. (2026)</div>
+          <div class="pub-title">When Majority Vote Silences Minority Values: Pluralistic Alignment Failures in Hate Speech Detection.</div>
+          <div class="pub-venue">Pluralistic Alignment Workshop @ ICML 2026</div>
+        </div>
+        <span class="pub-badge pub-accepted">Accepted ✓</span>
+      </div>
+
+      <div class="pub-item reveal reveal-delay-3">
+        <div class="pub-text">
+          <div class="pub-authors">Muhumuza, J., Katumba, A., Nakatumba-Nabende et al. (2024)</div>
+          <div class="pub-title">A Multi-Task Deep Learning Model for Classification and Report Generation from Chest X-Ray Images.</div>
+          <div class="pub-venue">Under review</div>
+        </div>
+        <span class="pub-badge pub-review">Under Review</span>
+      </div>
+
+      <div class="pub-item reveal reveal-delay-1">
+        <div class="pub-text">
+          <div class="pub-authors">Nsabagwa M., Muhumuza J. et al. (2018)</div>
+          <div class="pub-title">Minimal Idle Listening and Centralized Scheduling in TSCH Wireless Sensor Networks.</div>
+          <div class="pub-venue">IEEE, Greece</div>
+        </div>
+        <span class="pub-badge pub-accepted">Published</span>
+      </div>
+
+      <div class="pub-item reveal reveal-delay-2">
+        <div class="pub-text">
+          <div class="pub-authors">Nsabagwa M., Muhumuza J. et al. (2018)</div>
+          <div class="pub-title">Condition Monitoring and Reporting Framework for WSN-based Automatic Weather Stations.</div>
+          <div class="pub-venue">IEEE, Botswana</div>
+        </div>
+        <span class="pub-badge pub-accepted">Published</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GRANTS -->
+<section id="grants">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Funding</div>
+      <h2 class="section-title">Grants &amp; <em>Research Funding</em></h2>
+    </div>
+
+    <div class="grants-grid">
+      <div class="grant-card reveal reveal-delay-1">
+        <div class="grant-year">RUFORUM · 2026</div>
+        <div class="grant-title">Integrated Learning Management System</div>
+        <div class="grant-funder">Regional Universities Forum for Capacity Building in Agriculture</div>
+        <div class="grant-desc">Awarded to design and deploy an integrated LMS serving 175+ universities across Africa, strengthening shared academic infrastructure at continental scale.</div>
+      </div>
+
+      <div class="grant-card reveal reveal-delay-2">
+        <div class="grant-year">Buganda Royal Institute · 2026</div>
+        <div class="grant-title">Vocational Academic Management System</div>
+        <div class="grant-funder">Buganda Royal Institute Uganda</div>
+        <div class="grant-desc">Awarded to develop an academic management system for vocational training institutions, supporting skills development and economic participation across the region.</div>
+      </div>
+
+      <div class="grant-card reveal reveal-delay-3">
+        <div class="grant-year">National Institutes of Health USA · 2023–Present</div>
+        <div class="grant-title">Sickle Cell Early Detection</div>
+        <div class="grant-funder">National Institutes of Health, USA</div>
+        <div class="grant-desc">Co-investigator on NIH-funded project developing lightweight sickle cell detection models for mobile deployment in low-resource clinical settings in Uganda.</div>
+      </div>
+
+      <div class="grant-card reveal reveal-delay-1">
+        <div class="grant-year">BFTR &amp; GIZ Germany · 2024–Present</div>
+        <div class="grant-title">AMR Surveillance: ADAPT One Health</div>
+        <div class="grant-funder">BFTR and GIZ Germany</div>
+        <div class="grant-desc">Funded development and deployment of an AMR Mobile Application and dashboard to support Uganda's National AMR board in tracking AMR and promoting education awareness.</div>
+      </div>
+
+      <div class="grant-card reveal reveal-delay-2">
+        <div class="grant-year">NORHED · 2024–Present</div>
+        <div class="grant-title">Weather &amp; Climate Grant: WIMEA</div>
+        <div class="grant-funder">NORHED / WIMEA</div>
+        <div class="grant-desc">Funded development and deployment of design and monitoring systems for automatic weather stations across East Africa.</div>
+      </div>
+
+      <div class="grant-card reveal reveal-delay-3">
+        <div class="grant-year">Lacuna Fund · 2022–Present</div>
+        <div class="grant-title">TB Chest X-Ray Classification</div>
+        <div class="grant-funder">Lacuna Fund (Remote)</div>
+        <div class="grant-desc">Funded development of a multi-task deep learning model for TB classification and report generation deployed at Uganda's national referral hospitals.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Experience</div>
+      <h2 class="section-title">Work <em>History</em></h2>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item reveal">
+        <div class="timeline-header">
+          <div>
+            <div class="timeline-title">Makerere University</div>
+            <div class="timeline-org">Kampala, Uganda · Jan 2021 – Present</div>
+          </div>
+          <div class="timeline-period">4 yrs</div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-subrole">
+            <div class="subrole-header">
+              <span class="subrole-title">Senior Systems Engineer</span>
+              <span class="subrole-period">2025 – Present</span>
+            </div>
+            <ul>
+              <li>Leading architecture decisions and strategic technical direction for enterprise-scale platforms serving 175+ universities across Africa.</li>
+              <li>Driving continent-wide adoption of the university's data infrastructure — a first-of-its-kind integration of siloed institutional systems processing 25TB+ of live data.</li>
+              <li>Championing digital transformation initiatives that improve student outcomes, operational efficiency, and institutional governance at one of Africa's leading research universities.</li>
+            </ul>
+          </div>
+          <div class="timeline-subrole">
+            <div class="subrole-header">
+              <span class="subrole-title">Systems Engineer</span>
+              <span class="subrole-period">Jan 2021 – 2024</span>
+            </div>
+            <ul>
+              <li>Architected and delivered MakData, the university's first scalable data warehouse, unifying fragmented institutional systems and processing 25TB+ of data across Africa.</li>
+              <li>Built the Academic Records System (MakARS), preserving and digitising institutional records dating back to the 1900s and managing 15TB+ of historical data under the DARP project.</li>
+              <li>Engineered the Graduate e-Supervision System (RIMS), directly contributing to a 60% improvement in on-time graduate completions; rolled out across CAES with pilot expansions to CHUSS and CEES.</li>
+              <li>Designed and deployed Mak e-Vote, the university's secure electronic voting infrastructure; appointed to the oversight committee and entrusted to manage five consecutive guild elections.</li>
+              <li>Delivered the Electronic HR Management System (e-HRMS), automating end-to-end HR operations and eliminating manual processes across the institution.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item reveal">
+        <div class="timeline-header">
+          <div>
+            <div class="timeline-title">Google DeepMind Scholar</div>
+            <div class="timeline-org">Google DeepMind — London, UK</div>
+          </div>
+          <div class="timeline-period">Jan 2022 – Sept 2024</div>
+        </div>
+        <div class="timeline-body">
+          <ul>
+            <li>Designed and fine-tuned ML models for health diagnostics in Uganda.</li>
+            <li>Two projects secured NIH and Lacuna Fund grants and were deployed at national referral hospitals.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-item reveal">
+        <div class="timeline-header">
+          <div>
+            <div class="timeline-title">Lead AI Developer</div>
+            <div class="timeline-org">Emaisha Ltd — Kampala, Uganda</div>
+          </div>
+          <div class="timeline-period">Dec 2018 – Dec 2020</div>
+        </div>
+        <div class="timeline-body">
+          <ul>
+            <li>Led team that designed and launched <strong>Uganda's first farmer call center</strong>, securing the company's inaugural UNCDF grant and expanding agricultural support services.</li>
+            <li>Developed Livestock Manager web and Android portal for efficient livestock management.</li>
+            <li>Engineered a USSD-based farm management application for low-connectivity areas, promoting digital inclusion.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-item reveal">
+        <div class="timeline-header">
+          <div>
+            <div class="timeline-title">Software Engineer</div>
+            <div class="timeline-org">Thinvoid Ltd — Kampala, Uganda</div>
+          </div>
+          <div class="timeline-period">Aug 2018 – Dec 2018</div>
+        </div>
+        <div class="timeline-body">
+          <ul>
+            <li>Designed and prototyped data management system for NGO Educate!, boosting productivity across 700+ schools in Africa.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-item reveal">
+        <div class="timeline-header">
+          <div>
+            <div class="timeline-title">Software Developer</div>
+            <div class="timeline-org">WIMEA-ICT — Makerere University, Uganda</div>
+          </div>
+          <div class="timeline-period">Jun 2017 – Jun 2018</div>
+        </div>
+        <div class="timeline-body">
+          <ul>
+            <li>Developed web portal for managing automatic weather stations; design adopted by Uganda National Meteorological Association.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GOVERNANCE -->
+<section id="governance">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Policy</div>
+      <h2 class="section-title">AI Governance <em>&amp; Policy</em></h2>
+    </div>
+
+    <div class="gov-cards">
+      <div class="gov-card reveal reveal-delay-1">
+        <div class="gov-icon">🏛️</div>
+        <div class="gov-title">Kenya AI Safety Institute Framework Researcher</div>
+        <div class="gov-org">ITU / Oxford University (IAPS)</div>
+        <div class="gov-period">Feb – May 2025</div>
+        <div class="gov-body">
+          <ul>
+            <li>Researched the draft policy framework for Kenya's AI Safety Institute — one of the first such institutional frameworks produced for an African context, informing national-level AI governance design.</li>
+            <li>Conducted cross-country analysis of AI safety governance structures across EAC partner states, documenting the near-total absence of safety evaluation infrastructure and the institutional risks this poses for deployed AI systems.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="gov-card reveal reveal-delay-2">
+        <div class="gov-icon">🌍</div>
+        <div class="gov-title">AI Strategy Contributor &amp; Digital Leaders Forum Member</div>
+        <div class="gov-org">East African Community / EASTECO</div>
+        <div class="gov-period">2026 – Present</div>
+        <div class="gov-body">
+          <ul>
+            <li>Active contributor to the EAC's regional AI strategy; participated in the 4th STI AI Conference on AI4EAC alongside policymakers, regulators, and civil society leaders from all EAC partner states.</li>
+            <li>Advising on AI safety, equitable deployment, and governance frameworks for a region where AI adoption is accelerating without corresponding safety infrastructure or regulatory capacity.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Education</div>
+      <h2 class="section-title">Academic <em>Background</em></h2>
+    </div>
+
+    <div class="edu-cards">
+      <div class="edu-card reveal reveal-delay-1">
+        <div class="edu-degree">MSc Computer Science<br>(AI Track)</div>
+        <div class="edu-school">Makerere University</div>
+        <div class="edu-year">2022 – 2024</div>
+        <div class="edu-gpa">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          GPA 4.66/5 · First Class Honors
+        </div><br>
+        <div class="edu-sponsorship">Google DeepMind Scholar</div>
+      </div>
+
+      <div class="edu-card reveal reveal-delay-2">
+        <div class="edu-degree">BSc Software<br>Engineering</div>
+        <div class="edu-school">Makerere University</div>
+        <div class="edu-year">2014 – 2018</div>
+        <div class="edu-gpa">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          GPA 4.78/5 · First Class Honours
+        </div><br>
+        <div class="edu-sponsorship">Government of Uganda Scholar</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-inner">
+      <div class="reveal">
+        <div class="section-label">Contact</div>
+        <h2 class="section-title">Let's <em>Connect</em></h2>
+      </div>
+      <p class="contact-tagline reveal">
+        Open to research collaborations, AI governance consulting, clinical AI partnerships,
+        and speaking engagements. Based in Kampala — working globally.
+      </p>
+      <div class="contact-links reveal">
+        <a href="mailto:muhumuzajoshua95@gmail.com" class="contact-link">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.909 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>
+          muhumuzajoshua95@gmail.com
+        </a>
+        <a href="mailto:joshua.muhumuza@mak.ac.ug" class="contact-link">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+          joshua.muhumuza@mak.ac.ug
+        </a>
+        <a href="https://linkedin.com/in/muhumuza/" target="_blank" rel="noopener" class="contact-link">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+        <a href="https://github.com/joshmuhu" target="_blank" rel="noopener" class="contact-link">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          GitHub
+        </a>
+        <a href="Joshua_Muhumuza_CV.pdf" target="_blank" class="contact-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+          Download CV
+        </a>
+      </div>
+      <div class="reveal">
+        <div class="contact-availability">
+          <div class="availability-dot"></div>
+          Available for collaborations &amp; consulting
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Joshua Muhumuza · AI Safety Researcher · Kampala, Uganda</p>
+</footer>
+
+<script>
+// ─── PARTICLES ───
+(function() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let animFrame;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function createParticles() {
+    particles = [];
+    const count = Math.floor((window.innerWidth * window.innerHeight) / 18000);
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.2 + 0.3,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15,
+        o: Math.random() * 0.4 + 0.1
+      });
+    }
+  }
+  createParticles();
+  window.addEventListener('resize', createParticles);
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 100) {
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(59,130,246,${0.06 * (1 - dist/100)})`;
+          ctx.lineWidth = 0.5;
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw particles
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(59,130,246,${p.o})`;
+      ctx.fill();
+
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+    });
+
+    animFrame = requestAnimationFrame(draw);
+  }
+  draw();
+
+  // Stop animation when hero leaves viewport
+  const hero = document.getElementById('hero');
+  const heroObserver = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting) {
+      cancelAnimationFrame(animFrame);
+    } else {
+      draw();
+    }
+  });
+  heroObserver.observe(hero);
+})();
+
+// ─── TYPEWRITER ───
+(function() {
+  const phrases = ['AI Safety Researcher', 'Senior Systems Engineer', 'AI Governance Practitioner', 'Google DeepMind Scholar'];
+  let pi = 0, ci = 0, deleting = false, wait = 0;
+  const el = document.getElementById('typewriter');
+
+  function tick() {
+    const phrase = phrases[pi];
+    if (deleting) {
+      ci--;
+      if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; wait = 12; }
+    } else {
+      if (wait > 0) { wait--; setTimeout(tick, 80); return; }
+      ci++;
+      if (ci === phrase.length) { deleting = true; wait = 24; }
+    }
+    el.textContent = phrase.substring(0, ci);
+    setTimeout(tick, deleting ? 45 : 75);
+  }
+  setTimeout(tick, 800);
+})();
+
+// ─── SCROLL REVEAL ───
+(function() {
+  const els = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(el => obs.observe(el));
+})();
+
+// ─── NAV SCROLL ───
+(function() {
+  const nav = document.getElementById('navbar');
+  const links = document.querySelectorAll('.nav-links a');
+  const sections = document.querySelectorAll('section[id]');
+
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    links.forEach(l => {
+      l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+    });
+  }, { passive: true });
+})();
+
+// ─── MOBILE MENU ───
+const ham = document.getElementById('hamburger');
+const mm = document.getElementById('mobile-menu');
+ham.addEventListener('click', () => {
+  ham.classList.toggle('open');
+  mm.classList.toggle('open');
+});
+function closeMobile() {
+  ham.classList.remove('open');
+  mm.classList.remove('open');
+}
+</script>
+</body>
+</html>
